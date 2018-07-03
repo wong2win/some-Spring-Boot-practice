@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <!-- <link rel="icon" href=""> -->
+    <link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/css/login.css}" rel="stylesheet">
+    <style type="text/css">#anonymous{text-align:right;padding:10px;background-color:#fffff}</style>
+    <script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript">
+    	$(function(){
+    		$("#anonymous a").click(function(){
+    			location.href="/anonymousDude";
+    		});
+    	});
+    </script>
+	<title>Log in to continue</title>
+</head>
+<body class="text-center">
+	<div class="form-signin" >
+		<form action="#" th:action="@{/login#}" th:object="${userAuth}" method="post">
+			<h1 class="h3 mb-3 font-weight-normal">Log Innnnnnnnnnnnnn!</h1>
+			<label for="username">用户名/uid</label>
+			<input type="text" id="inputUsername" class="form-control" placeholder="UserName" required autofocus name="username" />
+			<p th:if="${flag}==2">*uid不合法,别瞎玩</p>
+			<label for="password">密码</label>
+			<input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required/>
+			<p th:if="${flag}==0">*uid或密码错误</p>
+			<button class="btn btn-lg btn-primary btn-block" type="submit">登陆</button>		
+		</form>
+		<div id="anonymous"><a href="/anonymousDude">anonymous sign in</a></div>
+	</div>
+</body>
+</html>

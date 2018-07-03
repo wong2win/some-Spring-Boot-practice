@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="nothing but air here">
+    <meta name="author" content="">
+	<title th:text="${fromUid}">uid here</title>
+	<!-- Bootstrap core CSS -->
+    <link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="../static/css/sticky-footer-navbar.css" th:href="@{/css/sticky-footer-navbar.css}" rel="stylesheet">
+    
+    <!-- js here -->
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" th:inline="javascript">
+    $(function(){
+		//alert("hello,"+[[${fromUid}]]);
+		/* $("form.form-inline").submit(function(event){
+			var keyword = $("form.form-inline input").val();
+			event.preventDefault();
+		}) */
+    })
+    </script>
+</head>
+<body>
+	<header>
+      <!-- Fixed navbar -->
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="#">VV留言板</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#" th:text="浏览" th:href="@{/index}" >Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" th:text="profile" >个人主页</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" th:text="注销" th:href="@{/logout}">logout</a>
+            </li>
+          </ul>
+          <form class="form-inline mt-2 mt-md-0" action="#" th:action="@{/search}">
+            <input name="keyword" class="form-control mr-sm-2" type="text" placeholder="请输入用户名，标签">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">搜索</button>
+          </form>
+        </div>
+      </nav>
+    </header>
+	
+	
+	<main role="main" class="container">
+		<div class="mt-5">浏览用户</div>
+		<div class='card card-body'>
+			<p th:if="${luid.size()==0}">还没有人留言，成为第一个留言的人吧</p>
+			<div th:each="uid : ${luid}">
+				<a class="lead p-3" th:text="${uid}" th:href="@{'/user/'+${uid}}">id</a>
+			</div>
+		</div>
+    </main>
+	
+	<footer class="footer">
+      <div class="container">
+        <span class="text-muted">Place sticky footer content here.</span>
+      </div>
+    </footer>
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+    <script src="../static/js/popper.min.js" th:src="@{/js/popper.min.js}"></script>
+    <script src="../static/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="nothing but air here">
+    <meta name="author" content="">
+	<title th:text="${toU.uid}">uid here</title>
+	<!-- Bootstrap core CSS -->
+    <link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="../static/css/sticky-footer-navbar.css" th:href="@{/css/sticky-footer-navbar.css}" rel="stylesheet">
+    
+    <!-- js here -->
+    <script th:src="@{https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js}"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript">	
+    	$(function(){
+    		var tag = $("a.tag");
+    		//'显示评论'按钮专用
+    		$(tag).click(function(event){
+    			$("div.modal-body").html("...");
+    			var tid = $(event.target).attr("href").slice(14);
+    			//$("#replyForm form").attr("action","/api/message/"+tid);//突然发现好像没必要
+    			$("#replyForm form #refTag").attr("value",tid);
+    			$("div.modal-footer a.reply2Tag").attr("href","/newCommentOn/"+tid);
+    			$.ajax({
+    				url:$(event.target).attr("href"),
+    				type:"GET",
+    				success:function(commentsList){
+    					$("div.modal-body").html(commentsList);
+    				},
+    			});
+    			event.preventDefault();
+    		});
+			//'评论'按钮专用
+    		var reply2TagBtn = $("a.reply2Tag");
+    		$(reply2TagBtn).click(function(event){
+    			var tid = $(event.target).attr("href").slice(14);
+    			$("#replyForm form #refTag").attr("value",tid);
+    			$("#replyForm form #refCmnt").removeAttr("value");
+    			//$("#replyForm form").attr("action","/api/message/"+tid);//突然发现好像没必要
+    			event.preventDefault();
+    		});
+    		//*****************提交评论******************
+    		var rf = $("#replyForm form");
+    		rf.submit(function(event){
+	    		var refMessageID = $("#replyForm form #refTag").val(); 
+	    		var reply2MsgID = $("#replyForm form #refCmnt").val();
+	    		var fromUid = $("#replyForm form [name='fromUid']").val();
+	    		var toUid = $("#replyForm form [name='toUid']").val();
+	    		var isTag = $("#replyForm form [name='isTag']").val();
+	    		var msgType = $("#replyForm form select").val();
+	    		var mtext = $("#replyForm form textarea").val();
+	    		
+	    		var json = {"mtext":mtext,"msgType":msgType,"isTag":isTag,"fromUid":fromUid,"toUid":toUid,"refMessageID":refMessageID,"reply2MsgID":reply2MsgID};
+    			
+    			$.ajax({
+    				url:$(rf).attr("action"),
+    				type:"POST",
+    				data:JSON.stringify(json),
+    				beforeSend: function(xhr) {
+    		            //xhr.setRequestHeader("Accept", "application/json");
+    		            xhr.setRequestHeader("Content-Type", "application/json");
+    		        },
+    				success:function(flag){
+    					if(flag==1) alert("评论成功");
+    					else alert("评论失败");
+    					$("#replyForm form textarea").val("");
+    				},
+    			});
+	    		event.preventDefault();
+    		});
+    		//**************标签表单**************
+    		var rtf = $("#replyTagForm form");
+    		rtf.submit(function(event){
+	    		var tfromUid = $("#replyTagForm form [name='fromUid']").val();
+	    		var ttoUid = $("#replyTagForm form [name='toUid']").val();
+	    		var tisTag = $("#replyTagForm form [name='isTag']").val();
+	    		var tmsgType = $("#replyTagForm form select").val();
+	    		var ttext = $("#replyTagForm form textarea").val();
+	    		
+	    		var json = {"mtext":ttext,"msgType":tmsgType,"isTag":tisTag,"fromUid":tfromUid,"toUid":ttoUid};
+    			
+    			$.ajax({
+    				url:$(rtf).attr("action"),
+    				type:"POST",
+    				data:JSON.stringify(json),
+    				beforeSend: function(xhr) {
+    		            xhr.setRequestHeader("Content-Type", "application/json");
+    		        },
+    				success:function(flag){
+    					if(flag==1) alert("评论成功");
+    					else alert("评论失败");
+    					$("#replyTagForm form textarea").val("");
+    				},
+    			});
+	    		event.preventDefault();
+    		});
+    	});
+    </script>
+
+  </head>
+<body>
+
+	<header>
+      <!-- Fixed navbar -->
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="#">VV留言板</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#" th:text="浏览" th:href="@{/index}" >Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" th:text="个人主页" th:href="@{'/user/'+${fromUid}}">profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" th:text="注销" th:href="@{/logout}">logout</a>
+            </li>
+          </ul>
+          <form class="form-inline mt-2 mt-md-0" action="#" th:action="@{/search}">
+            <input name="keyword" class="form-control mr-sm-2" type="text" placeholder="请输入用户名，标签">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">搜索</button>
+          </form>
+        </div>
+      </nav>
+    </header>
+	
+	<!-- <div class="alert alert-danger alert-dismissible fade show" role="alert">
+		<strong>Oooops!</strong> 对该用户评论次数已达上限...
+  		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    		<span aria-hidden="true">&times;</span>
+  		</button>
+	</div> -->
+	<main role="main" class="container">
+		<h1 class="mt-5" th:text="${toU.uid}+'的标签'">标签列表</h1>
+			<div class='card card-body'>
+				<p th:if="${msglist.size()==0}">还没有人留言，成为第一个留言的人吧</p>
+				<div th:each="tag : ${msglist}">
+					<div class="btn-group p-1" role="group">
+					  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					    [[${tag.visibility}==1?${tag.mtext}:'Blocked']] <span class="badge badge-light" th:text="'like '+${tag.likesCount}"></span>
+					  </button>
+					  <div class="dropdown-menu">
+					  	<a  role="button" class="btn btn-danger like-tag dropdown-item" href="#" th:href="@{'/likeMsg/'+${tag.msgID}}">like</a>
+					    <a role="button" class="btn btn-primary dropdown-item tag" data-toggle="modal" data-target="#commentsList"
+					 		th:href="@{'/showComments/'+${tag.msgID}}">显示评论</a>
+					    <a class="dropdown-item" href="#" th:if="${toU.uid}==${fromUid}" th:href="@{'/hideMsg/'+${tag.msgID}}">隐藏</a>
+					  </div>
+					</div>
+			  	</div>
+		  	</div>
+		  	<div class="d-flex flex-row-reverse">
+		  		<!-- **************添加标签表单************** -->
+		  		<div id="replyTagForm" class="collapse">
+		      		<form action='#'  th:action="@{/api/newComment}" method="post" >
+				    	<textarea name="text" style="width:100%"></textarea>
+				    	<select name="msgType" class="custom-select" style="width:30%">
+				    		<option value='1'>匿名留言</option>
+				    		<option value='2'>不匿！</option>
+				    	</select>
+				    	<input type="hidden" name="fromUid" th:value="${fromUid}"/>
+				    	<input type="hidden" name="toUid" th:value="${toU.uid}"/>
+				    	<input type="hidden" name="isTag" th:value="1"/>
+				    	<button class="btn btn-primary btn-sm" type="submit">submit</button>
+				    </form>
+		  		</div>
+		  		<a role="button" class="btn btn-primary btn-sm newTag p-1" data-toggle="collapse" data-target="#replyTagForm" aria-expanded="false" aria-controls="replyTagForm" href="#">新标签</a>
+		  	</div>
+		  	
+	  	<!-- ********待展开评论********** -->
+		<div class="modal fade" id="commentsList" tabindex="-1" role="dialog" aria-labelledby="ModalLongTitle" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h5 class="modal-title" id="ModalLongTitle">评论</h5>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		          <span aria-hidden="true">&times;</span>
+		        </button>
+		      </div>
+		      <div class="modal-body">
+		      	...
+		      </div>
+		      <div class="modal-footer">
+		      	<!-- ***************评论表单************** -->      	
+		      	<div id="replyForm" class="collapse" >
+		      		<form action='#'  th:action="@{/api/newComment}" method="post">
+				    	<textarea name="mtext" style="width:100%"></textarea>
+				    	<select name="msgType" class="custom-select" style="width:30%" id="inlineFormCustomSelect">
+				    		<option value='1'>匿名留言</option>
+				    		<option value='2'>不匿！</option>
+				    	</select>
+				    	<input type="hidden" name="fromUid" th:value="${fromUid}"/>
+				    	<input type="hidden" name="toUid" th:value="${toU.uid}"/>
+				    	<input type="hidden" name="isTag" th:value="0"/>
+				    	<input type="hidden" id="refTag" name="refMessageID" value="" />
+				    	<input type="hidden" id="refCmnt" name="reply2MsgID" value="" />
+				    	<button class="btn btn-primary btn-sm" type="submit">submit</button>
+				    </form>
+		      	</div>
+		      	<!-- *******href需要用js更改***data-dismiss="modal"**** -->
+		        <a role="button" class="btn btn-primary reply2Tag" data-toggle="collapse" data-target="#replyForm"
+		        	aria-expanded="false" aria-controls="replyForm" href='#'>评论</a>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <span class="text-muted">Endless coding...</span>
+      </div>
+    </footer>
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+    <script src="../static/js/popper.min.js" th:src="@{/js/popper.min.js}"></script>
+    <script src="../static/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+  </body>
+</body>
+</html>
